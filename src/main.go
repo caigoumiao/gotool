@@ -3,16 +3,15 @@ package main
 import (
 	"bytes"
 	"flag"
-	"fmt"
 	"github.com/kylelemons/go-gypsy/yaml"
 	"os/exec"
 	"strings"
 )
 
 const (
-	COMPILE = "COMPILE"
-	DEPLOY = "DEPLOY"
-	LIST = "LIST"
+	COMPILE  = "COMPILE"
+	DEPLOY   = "DEPLOY"
+	LIST     = "LIST"
 	ROLLBACK = "ROLLBACK"
 )
 
@@ -22,12 +21,16 @@ func main() {
 	flag.Parse()
 	op = flag.Arg(0)
 	switch strings.ToUpper(op) {
-		case COMPILE : compile()
-		case DEPLOY : deploy()
-		case LIST : list()
-		case ROLLBACK : roolback()
-		default :
-			println("error")
+	case COMPILE:
+		compile()
+	case DEPLOY:
+		deploy()
+	case LIST:
+		list()
+	case ROLLBACK:
+		roolback()
+	default:
+		println("error")
 	}
 }
 
@@ -60,7 +63,7 @@ func compile() {
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 
-	cmd := exec.Command(fmt.Sprintf("git clone %s %s", gitUrl, path))
+	cmd := exec.Command("git", "clone", gitUrl, path)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	err = cmd.Run()
