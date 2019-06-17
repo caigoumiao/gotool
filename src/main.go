@@ -1,11 +1,12 @@
 package main
 
 import (
-	"bytes"
 	"flag"
-	"github.com/kylelemons/go-gypsy/yaml"
-	"os/exec"
+	"fmt"
+	"github.com/labstack/gommon/log"
 	"strings"
+	"time"
+	"util"
 )
 
 const (
@@ -44,35 +45,62 @@ func compile() {
 		return
 	}
 
-	// 读取配置文件
-	config, err := yaml.ReadFile("conf.yaml")
-	if err != nil {
-		println("error : " + err.Error())
-		return
-	}
-
-	gitUrl, err := config.Get("git.url")
-	path, err := config.Get("path")
+	// 获取shell session
+	session, in, out, err := util.Connect(util.GetConfig().SSH.Host, util.GetConfig().SSH.Port, util.GetConfig().SSH.IdRsaPath)
+	// 忽视登录产生的shell output
+	<-out
+	defer session.Close()
 
 	if err != nil {
-		println("error : " + err.Error())
-		return
+		log.Errorf("get shell session error : %s" + err.Error())
+		panic(err.Error())
 	}
+
+	//session.Run("echo Hello,World!")
 
 	// 开始拉取git 代码
-	var stdout bytes.Buffer
-	var stderr bytes.Buffer
+	// 脚本执行过程中的日志输出
 
-	cmd := exec.Command("git", "clone", gitUrl, path)
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	err = cmd.Run()
+	// todo : 加上分支
+	log.Infof("begin to pull code ...")
+	projectDir := util.GetConfig().Build.Path + "/" + projectName
+	gitCmd := fmt.Sprintf("git clone -b %s %s %s",
+		branch,
+		util.GetConfig().Build.GitUrl,
+		projectDir)
+	in <- gitCmd
+	fmt.Println(<-out)
 
-	if err != nil {
-		println("cmd run error : " + err.Error())
+	// 下载依赖包
+	// todo：可能会有某些依赖go get 失败，怎么处理？
+	// todo: 可以分多session 去一起下载
+	fmt.Println("begin to go get libs......")
+	libs := util.GetConfig().Build.Lib
+	for lib := range libs {
+		in <- fmt.Sprintf("go get %s", lib)
+		fmt.Printf("go get %s ing......", lib)
+		<-out
 	}
 
-	println("cmd stdout = " + stdout.String())
+	// 开始build 吗？
+	fmt.Println("begin to build......")
+	buildCmd := fmt.Sprintf("cd %s && go build", projectDir)
+	in <- buildCmd
+	fmt.Println(<-out)
+
+	// 编译结果打包为tar
+	fmt.Println("begin to tar " + projectDir)
+	tarName := fmt.Sprintf("%s-%d.tar", projectName, time.Now().Unix())
+	tarCmd := fmt.Sprintf("sudo tar -cvf %s %s", tarName, projectDir)
+	in <- tarCmd
+	in <- "ceshi1234"
+	fmt.Println(<-out)
+
+	// tar 上传到oss
+
+	// 退出shell
+	in <- "exit"
+	session.Wait()
 }
 
 // 部署

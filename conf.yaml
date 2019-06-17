@@ -1,4 +1,19 @@
-git:
-  url: https://github.com/kylelemons/go-gypsy.git
+### 编译配置
+build:
+  path: /home/miao
+  gitUrl: https://github.com/caigoumiao/gotool.git
 
-path: /home/miao
+### 主机连接配置
+ssh:
+  host: 123.56.24.247
+  port: 22
+  idrsaPath: id_rsa
+
+### oss
+
+
+### 待安装依赖
+lib:
+  - github.com/crypto/util
+  - github.com/kylelemons/go-gypsy/yaml
+  - github.com/labstack/gommon/log
