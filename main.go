@@ -76,15 +76,15 @@ func compile() {
 	// todo: 可以分多session 去一起下载
 	fmt.Println("begin to go get libs......")
 	libs := util.GetConfig().Build.Lib
-	for lib := range libs {
+	for i, lib := range libs {
 		in <- fmt.Sprintf("go get %s", lib)
-		fmt.Printf("go get %s ing......", lib)
-		<-out
+		fmt.Printf("%d. go get %s ......\n", i+1, lib)
+		println(<-out)
 	}
 
 	// 开始build 吗？
 	fmt.Println("begin to build......")
-	buildCmd := fmt.Sprintf("cd %s && go build", projectDir)
+	buildCmd := fmt.Sprintf("cd %s && go build -v main.go", projectDir)
 	in <- buildCmd
 	fmt.Println(<-out)
 
@@ -94,7 +94,7 @@ func compile() {
 	tarCmd := fmt.Sprintf("sudo tar -cvf %s %s", tarName, projectDir)
 	in <- tarCmd
 	in <- "ceshi1234"
-	fmt.Println(<-out)
+	<-out
 
 	// tar 上传到oss
 

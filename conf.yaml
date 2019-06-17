@@ -2,6 +2,9 @@
 build:
   path: /home/miao
   gitUrl: https://github.com/caigoumiao/gotool.git
+  lib:
+    - github.com/kylelemons/go-gypsy/yaml
+    - github.com/labstack/gommon/log
 
 ### 主机连接配置
 ssh:
@@ -10,10 +13,3 @@ ssh:
   idRsaPath: src/id_rsa
 
 ### oss
-
-
-### 待安装依赖
-lib:
-  - github.com/crypto/util
-  - github.com/kylelemons/go-gypsy/yaml
-  - github.com/labstack/gommon/log
