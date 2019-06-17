@@ -6,7 +6,6 @@ import (
 	"golang.org/x/crypto/ssh"
 	"io"
 	"io/ioutil"
-	"os"
 	"strings"
 	"sync"
 )
@@ -42,10 +41,6 @@ func Connect(host string, port int, id_rsa string) (*ssh.Session, chan<- string,
 	}
 
 	session, err := client.NewSession()
-	session.Stdout = os.Stdout
-	session.Stderr = os.Stderr
-
-	defer session.Close()
 
 	modes := ssh.TerminalModes{
 		ssh.ECHO:          1,     // enable echoing
@@ -71,12 +66,10 @@ func Connect(host string, port int, id_rsa string) (*ssh.Session, chan<- string,
 	}
 
 	in, out := MuxShell(w, r, e)
-	if err := session.Shell(); err != nil {
-		log.Fatal(err)
-	}
 
 	if err := session.Shell(); err != nil {
 		log.Fatal(err)
+		panic(err.Error())
 	}
 
 	return session, in, out, nil

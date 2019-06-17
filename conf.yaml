@@ -7,7 +7,7 @@ build:
 ssh:
   host: 123.56.24.247
   port: 22
-  idrsaPath: id_rsa
+  idRsaPath: src/id_rsa
 
 ### oss
 

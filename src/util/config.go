@@ -51,5 +51,5 @@ func LoadConfig(filePath string) {
 }
 
 func init() {
-	LoadConfig("../../conf.yaml")
+	LoadConfig("conf.yaml")
 }
