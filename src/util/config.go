@@ -12,14 +12,21 @@ type Config struct {
 		Path   string   `yaml:"path"`
 		GitUrl string   `yaml:"gitUrl"`
 		Lib    []string `yaml:"lib"`
+		SSH    SSH      `yaml:"ssh"`
 	}
 
-	// 连接配置
-	SSH struct {
-		Host      string `yaml:"host"`
-		Port      int    `yaml:"port"`
-		IdRsaPath string `yaml:"idRsaPath"`
+	// 部署配置
+	Deploy struct {
+		SSH      SSH    `yaml:"ssh"`
+		MainFunc string `yaml:"mainFunc"`
 	}
+}
+
+type SSH struct {
+	Host      string `yaml:"host"`
+	Port      int    `yaml:"port"`
+	IdRsaPath string `yaml:"idRsaPath"`
+	UserName  string `yaml:"userName"`
 }
 
 var config *Config
@@ -51,5 +58,5 @@ func LoadConfig(filePath string) {
 }
 
 func init() {
-	LoadConfig("conf.yaml")
+	//LoadConfig("conf.yaml")
 }

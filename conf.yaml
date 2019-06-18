@@ -5,11 +5,21 @@ build:
   lib:
     - github.com/kylelemons/go-gypsy/yaml
     - github.com/labstack/gommon/log
-
-### 主机连接配置
-ssh:
-  host: 123.56.24.247
-  port: 22
-  idRsaPath: src/id_rsa
+    - gopkg.in/yaml.v2
+    - github.com/mailru/easyjson
+  ssh:
+    host: 123.56.24.247
+    port: 22
+    idRsaPath: src/id_rsa
+    userName: root
 
 ### oss
+
+### 部署配置
+deploy:
+  ssh:
+    host: 123.56.24.247
+    port: 22
+    idRsaPath: src/id_rsa
+    userName: root
+  mainFunc: main
